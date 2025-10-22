@@ -1,17 +1,37 @@
 import React, { useState } from "react";
+import { loginApi } from "../services/auth";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Data:", formData);
-    // Add login logic here
+    setLoading(true);
+    setError("");
+
+    try {
+      const data = await loginApi(formData.email, formData.password);
+      if (data.user.role === "admin") {
+      navigate("/register-user");
+    } else if (data.user.role === "user") {
+      navigate("/dashboard");
+    } else {
+      setError("Unknown user role.");
+    }
+    } catch (err) {
+      setError(err.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -20,6 +40,11 @@ const Login = () => {
         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
           Welcome Back
         </h2>
+
+        {error && (
+          <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -53,9 +78,10 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full bg-black text-white py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition cursor-pointer"
+            disabled={loading}
+            className="w-full bg-black text-white py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition cursor-pointer disabled:opacity-50"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>
