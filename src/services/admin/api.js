@@ -2,15 +2,16 @@ import axios from "axios";
 import API_BASE_URL from "../../config/api";
 
 // Common function to get headers
-const getHeaders = (isFormData = false) => {
-  const token = localStorage.getItem("token");
-  return {
-    ...(isFormData
-      ? { "Content-Type": "multipart/form-data" }
-      : { "Content-Type": "application/json" }),
-    ...(token && { Authorization: `Bearer ${token}` }),
+export const getHeaders = (isFormData = false) => {
+  const headers = {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+    "Content-Type": "application/json",
   };
+
+  if (isFormData) delete headers["Content-Type"]; 
+  return headers;
 };
+
 
 // Helper to build FormData (handles files and arrays)
 const buildFormData = (data) => {
