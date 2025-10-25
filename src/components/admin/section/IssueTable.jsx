@@ -42,7 +42,7 @@ const IssueTable = () => {
 
       const response = await getVisitorsListApi(slug, params);
 
-      // ✅ Match your actual response structure
+      //  Match your actual response structure
       if (response?.List?.data && Array.isArray(response.List.data)) {
         const transformedIssues = response.List.data.map((visitor) => ({
           id: visitor._id,
@@ -91,7 +91,7 @@ const IssueTable = () => {
         )
       );
 
-      alert(`Status updated to ${value}`);
+    //   alert(`Status updated to ${value}`);
     } catch (error) {
       console.error("Error updating status:", error);
       alert("Failed to update status");

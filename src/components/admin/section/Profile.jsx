@@ -19,6 +19,7 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     name: "",
     image: null,
+    imageFile: null,
     description: "",
     welcomeMessage: "",
     facebook: "",
@@ -45,9 +46,10 @@ const Profile = () => {
 
       if (response?.status && response.chatbots) {
         const chatbot = response.chatbots;
+
         const fetchedData = {
           name: chatbot.companyName || "",
-          image: chatbot.logo || null,
+          image: chatbot.logoUrl || null,
           description: chatbot.description || "",
           welcomeMessage: chatbot.welcomeMessage || "",
           facebook: chatbot.socialLinks?.facebook || "",
@@ -60,7 +62,6 @@ const Profile = () => {
         setSubmittedData(fetchedData);
         setIsEditing(false);
 
-        // Set chatbot link using slug
         if (chatbot.slug) {
           localStorage.setItem("chatbotSlug", chatbot.slug);
           setChatbotLink(
@@ -91,21 +92,50 @@ const Profile = () => {
       setFormData((prev) => ({
         ...prev,
         image: URL.createObjectURL(file),
+        imageFile: file,
       }));
     }
   };
 
-  const preparePayload = () => ({
-    companyName: formData.name,
-    welcomeMessage: formData.welcomeMessage,
-    logo: formData.image,
-    description: formData.description,
-    socialLinks: {
-      facebook: formData.facebook,
-      instagram: formData.instagram,
-      youtube: formData.youtube,
-    },
-  });
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({
+      ...prev,
+      image: null,
+      imageFile: null,
+    }));
+  };
+
+  const preparePayload = () => {
+    const payload = {
+      companyName: formData.name,
+      welcomeMessage: formData.welcomeMessage,
+      description: formData.description,
+      socialLinks: {
+        facebook: formData.facebook,
+        instagram: formData.instagram,
+        youtube: formData.youtube,
+      },
+    };
+
+    if (formData.imageFile) {
+      const formDataObj = new FormData();
+      Object.keys(payload).forEach((key) => {
+        if (typeof payload[key] === "object") {
+          formDataObj.append(key, JSON.stringify(payload[key]));
+        } else {
+          formDataObj.append(key, payload[key]);
+        }
+      });
+      formDataObj.append("logo", formData.imageFile);
+      return formDataObj;
+    }
+
+    if (!formData.image && !formData.imageFile) {
+      return { ...payload, logo: null };
+    }
+
+    return { ...payload, logo: formData.image };
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -114,27 +144,25 @@ const Profile = () => {
     setLoading(true);
     try {
       const payload = preparePayload();
+      let response;
 
       if (chatbotId) {
-        const response = await updateChatbotApi(chatbotId, payload);
-        if (response?.slug) {
-          localStorage.setItem("chatbotSlug", response.slug);
-          setChatbotLink(
-            `https://chatbot-frontend-ten-mu.vercel.app/${response.slug}`
-          );
-        }
+        response = await updateChatbotApi(chatbotId, payload);
       } else {
-        const response = await createChatbotApi(payload);
-        setChatbotId(response?._id || response?.id);
-        if (response?.slug) {
-          localStorage.setItem("chatbotSlug", response.slug);
-          setChatbotLink(
-            `https://chatbot-frontend-ten-mu.vercel.app/${response.slug}`
-          );
-        }
+        response = await createChatbotApi(payload);
       }
 
-      setSubmittedData(formData);
+      if (response?.slug) {
+        localStorage.setItem("chatbotSlug", response.slug);
+        setChatbotLink(
+          `https://chatbot-frontend-ten-mu.vercel.app/${response.slug}`
+        );
+      }
+
+      setSubmittedData({
+        ...formData,
+        image: response?.logoUrl || formData.image,
+      });
       setIsEditing(false);
     } catch (error) {
       console.error("Error saving chatbot:", error);
@@ -161,6 +189,7 @@ const Profile = () => {
 
   return (
     <div className="p-5">
+      {/* Header */}
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h2 className="text-xl font-bold text-gray-900">
@@ -180,6 +209,7 @@ const Profile = () => {
         </button>
       </div>
 
+      {/* Chatbot Link Modal */}
       {isLinkModalOpen && (
         <div className="fixed inset-0 backdrop-blur-sm bg-opacity-60 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg w-[90%] max-w-md relative">
@@ -213,9 +243,11 @@ const Profile = () => {
         </div>
       )}
 
+      {/* Form Section */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-8 w-full max-w-5xl">
         {isEditing ? (
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Company Name */}
             <div>
               <label
                 htmlFor="name"
@@ -235,6 +267,7 @@ const Profile = () => {
               />
             </div>
 
+            {/* Upload Logo */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Upload Logo
@@ -267,7 +300,7 @@ const Profile = () => {
                       alt="Preview"
                       className="h-40 w-40 object-cover rounded-lg border shadow-sm"
                     />
-                    <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition">
+                    <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center gap-3 transition opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
                       <button
                         type="button"
                         onClick={() => setPreviewOpen(true)}
@@ -277,9 +310,7 @@ const Profile = () => {
                       </button>
                       <button
                         type="button"
-                        onClick={() =>
-                          setFormData((prev) => ({ ...prev, image: null }))
-                        }
+                        onClick={handleRemoveImage}
                         className="bg-white text-red-600 rounded-full p-2 hover:bg-gray-100 cursor-pointer"
                       >
                         <Trash2 size={18} />
@@ -290,6 +321,7 @@ const Profile = () => {
               </div>
             </div>
 
+            {/* Description */}
             <div>
               <label
                 htmlFor="description"
@@ -309,6 +341,7 @@ const Profile = () => {
               />
             </div>
 
+            {/* Welcome Message */}
             <div>
               <label
                 htmlFor="welcomeMessage"
@@ -327,6 +360,7 @@ const Profile = () => {
               />
             </div>
 
+            {/* Social Links */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 {
@@ -368,6 +402,7 @@ const Profile = () => {
               ))}
             </div>
 
+            {/* Buttons */}
             <div className="flex justify-end gap-3 pt-4">
               <button
                 type="button"
@@ -382,11 +417,16 @@ const Profile = () => {
                 disabled={loading}
                 className="px-6 py-2.5 bg-black text-white font-semibold rounded-lg hover:bg-gray-800 disabled:bg-gray-400 cursor-pointer"
               >
-                {loading ? "Saving..." : chatbotId ? "Update Details" : "Save Details"}
+                {loading
+                  ? "Saving..."
+                  : chatbotId
+                  ? "Update Details"
+                  : "Save Details"}
               </button>
             </div>
           </form>
         ) : (
+          // View Mode
           <div className="space-y-6 text-center">
             <h3 className="text-lg font-semibold text-gray-900">
               ChatBot Details
@@ -397,7 +437,7 @@ const Profile = () => {
                 <img
                   src={submittedData.image}
                   alt={submittedData.name}
-                  className="h-32 w-32 object-cover rounded-lg border cursor-pointer"
+                  className="h-32 w-32 object-cover rounded-lg border"
                 />
               )}
               <p className="text-lg font-medium text-gray-900">
@@ -461,8 +501,9 @@ const Profile = () => {
           </div>
         )}
 
+        {/* Image Preview Modal */}
         {previewOpen && formData.image && (
-          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="fixed inset-0 backdrop-blur-lg bg-black/30 flex items-center justify-center z-50">
             <div className="relative">
               <img
                 src={formData.image}
