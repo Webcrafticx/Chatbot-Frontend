@@ -1,6 +1,6 @@
 import React from "react";
 import { Menu, LogOut } from "lucide-react";
-// import { logout } from "../../../services/auth";
+import { logout } from "../../../services/auth";
 
 const Header = ({ toggleMobileSidebar }) => {
   const handleLogout = async () => {

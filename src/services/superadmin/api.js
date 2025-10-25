@@ -40,7 +40,7 @@ export const getUsers = async () => {
 export const deleteUser = async (userId) => {
   try {
     const token = localStorage.getItem("token");
-    const response = await axios.delete(`${API_BASE_URL}/admin/users/${userId}`, {
+    const response = await axios.delete(`${API_BASE_URL}/admin/delete-users/${userId}`, {
       headers: {
         "Content-Type": "application/json",
         ...(token && { Authorization: `Bearer ${token}` }),
