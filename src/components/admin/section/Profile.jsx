@@ -105,37 +105,28 @@ const Profile = () => {
     }));
   };
 
-  const preparePayload = () => {
-    const payload = {
-      companyName: formData.name,
-      welcomeMessage: formData.welcomeMessage,
-      description: formData.description,
-      socialLinks: {
-        facebook: formData.facebook,
-        instagram: formData.instagram,
-        youtube: formData.youtube,
-      },
-    };
+const preparePayload = () => {
+  const formDataObj = new FormData();
 
-    if (formData.imageFile) {
-      const formDataObj = new FormData();
-      Object.keys(payload).forEach((key) => {
-        if (typeof payload[key] === "object") {
-          formDataObj.append(key, JSON.stringify(payload[key]));
-        } else {
-          formDataObj.append(key, payload[key]);
-        }
-      });
-      formDataObj.append("logo", formData.imageFile);
-      return formDataObj;
-    }
+  // Basic allowed text fields
+  if (formData.name) formDataObj.append("companyName", formData.name);
+  if (formData.description) formDataObj.append("description", formData.description);
+  if (formData.welcomeMessage)
+    formDataObj.append("welcomeMessage", formData.welcomeMessage);
 
-    if (!formData.image && !formData.imageFile) {
-      return { ...payload, logo: null };
-    }
+  if (formData.facebook) formDataObj.append("facebook", formData.facebook);
+  if (formData.instagram) formDataObj.append("instagram", formData.instagram);
+  if (formData.youtube) formDataObj.append("youtube", formData.youtube);
 
-    return { ...payload, logo: formData.image };
-  };
+  // ✅ Add image file if available
+  if (formData.imageFile) {
+    formDataObj.append("logo", formData.imageFile);
+  }
+  console.log("Prepared FormData:", Array.from(formDataObj.entries()));
+  return formDataObj;
+};
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();

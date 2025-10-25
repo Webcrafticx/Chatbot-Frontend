@@ -2,15 +2,14 @@ import axios from "axios";
 import API_BASE_URL from "../../config/api";
 
 // Common function to get headers
-export const getHeaders = (isFormData = false) => {
-  const headers = {
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-    "Content-Type": "application/json",
+const getHeaders = (isFormData = false) => {
+  const token = localStorage.getItem("token");
+  return {
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
+    ...(token && { Authorization: `Bearer ${token}` }),
   };
-
-  if (isFormData) delete headers["Content-Type"]; 
-  return headers;
 };
+
 
 
 // Helper to build FormData (handles files and arrays)
@@ -29,11 +28,11 @@ const buildFormData = (data) => {
 // POST /api/user/chatbots - Create a new chatbot
 export const createChatbotApi = async (chatbotData) => {
   try {
-        const formData = buildFormData(chatbotData);
+        // const formData = buildFormData(chatbotData);
 
     const response = await axios.post(
       `${API_BASE_URL}/user/chatbots`,
-      formData,
+      chatbotData,
       {
         headers: getHeaders(true),
       }
@@ -47,19 +46,16 @@ export const createChatbotApi = async (chatbotData) => {
 };
 
 // PATCH /api/chatbot/{id} - Update an existing chatbot
-export const updateChatbotApi = async (chatbotId, chatbotData) => {
+
+export const updateChatbotApi = async (chatbotId, formData) => {
   try {
-
-        const formData = buildFormData(chatbotData);
-
     const response = await axios.patch(
       `${API_BASE_URL}/chatbot/${chatbotId}`,
       formData,
       {
-        headers: getHeaders(true),
+        headers: getHeaders(true), // leave blank for multipart
       }
     );
-
     return response.data;
   } catch (error) {
     console.error("Error updating chatbot:", error);
