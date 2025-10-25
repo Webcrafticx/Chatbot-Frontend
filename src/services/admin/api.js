@@ -2,22 +2,39 @@ import axios from "axios";
 import API_BASE_URL from "../../config/api";
 
 // Common function to get headers
-const getHeaders = () => {
+const getHeaders = (isFormData = false) => {
   const token = localStorage.getItem("token");
   return {
-    "Content-Type": "application/json",
+    ...(isFormData
+      ? { "Content-Type": "multipart/form-data" }
+      : { "Content-Type": "application/json" }),
     ...(token && { Authorization: `Bearer ${token}` }),
   };
+};
+
+// Helper to build FormData (handles files and arrays)
+const buildFormData = (data) => {
+  const formData = new FormData();
+  for (const key in data) {
+    if (Array.isArray(data[key])) {
+      data[key].forEach((item) => formData.append(`${key}[]`, item));
+    } else if (data[key] !== undefined && data[key] !== null) {
+      formData.append(key, data[key]);
+    }
+  }
+  return formData;
 };
 
 // POST /api/user/chatbots - Create a new chatbot
 export const createChatbotApi = async (chatbotData) => {
   try {
+        const formData = buildFormData(chatbotData);
+
     const response = await axios.post(
       `${API_BASE_URL}/user/chatbots`,
-      chatbotData,
+      formData,
       {
-        headers: getHeaders(),
+        headers: getHeaders(true),
       }
     );
 
@@ -31,11 +48,14 @@ export const createChatbotApi = async (chatbotData) => {
 // PATCH /api/chatbot/{id} - Update an existing chatbot
 export const updateChatbotApi = async (chatbotId, chatbotData) => {
   try {
+
+        const formData = buildFormData(chatbotData);
+
     const response = await axios.patch(
       `${API_BASE_URL}/chatbot/${chatbotId}`,
-      chatbotData,
+      formData,
       {
-        headers: getHeaders(),
+        headers: getHeaders(true),
       }
     );
 
