@@ -22,8 +22,7 @@ export const loginApi = async (email, password) => {
 
 export const logout = async () => {
   try {
-    // Remove token from localStorage
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("token");
 
     
     return { success: true };
