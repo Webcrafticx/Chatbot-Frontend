@@ -1,7 +1,7 @@
 // Home.jsx
 import React from "react";
 import HomeLayout from "../../layout/HomeLayout";
-import Details from "../../components/home/section/details";
+import Details from "../../components/home/section/Details";
 import Chatbot from "../../components/home/section/Chatbot"; // Import the Chatbot
 
 const Home = () => {
