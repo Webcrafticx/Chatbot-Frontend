@@ -9,8 +9,11 @@ const App = () => {
     return (
         <div className="App">
             <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/register-user" element={<SuperAdminDashboard />} />
+                <Route path="/:slug?" element={<Home />} />
+                <Route
+                    path="/register-user"
+                    element={<SuperAdminDashboard />}
+                />
                 <Route path="/dashboard" element={<AdminDashboard />} />
                 <Route path="/add-question" element={<AdminQuestion />} />
                 <Route path="/login" element={<Login />} />
