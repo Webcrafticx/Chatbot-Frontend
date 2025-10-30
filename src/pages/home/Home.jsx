@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import HomeLayout from "../../layout/HomeLayout";
 import Chatbot from "../../components/home/section/Chatbot";
 import API_BASE_URL from "../../config/api";
-import Details from "../../components/home/section/details";
+import Details from "../../components/home/section/Details";
 
 const Home = () => {
     const { slug } = useParams();
