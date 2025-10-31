@@ -7,6 +7,8 @@ import {
     FaExpand,
     FaCompress,
     FaRedo,
+    FaPaperPlane,
+    FaUser,
 } from "react-icons/fa";
 import API_BASE_URL from "../../../config/api";
 import ChatContent from "./ChatContent";
@@ -167,7 +169,6 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
             const companyName = slugData?.chatbot?.companyName || "We";
 
             if (success) {
-                // Add bot reply message instead of alert
                 setMessages((prev) => [
                     ...prev,
                     {
@@ -200,7 +201,6 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
             ]);
         } finally {
             setIsLoading(false);
-            // Show FAQs again after a short delay
             setTimeout(() => setMode("suggestions"), 800);
         }
     };
@@ -216,28 +216,24 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
         try {
             const apiResponse = await sendMessageToAPI(input);
 
-            // If backend returned any answer
             if (apiResponse?.chat?.answer) {
                 const answerType = apiResponse.chat.type;
 
-                // Show the bot's message first
                 setMessages((prev) => [
                     ...prev,
                     { text: apiResponse.chat.answer, sender: "bot" },
                 ]);
 
-                // If it's a fallback → open form mode
                 if (answerType === "fallback") {
                     setTimeout(() => {
                         setMode("form");
-                    }, 1000); // small delay for smoother UI
+                    }, 1000);
                 }
 
                 setIsLoading(false);
                 return;
             }
 
-            // Fallback if API doesn't return answer
             const companyName =
                 slugData?.chatbot?.companyName || "our support team";
             setMessages((prev) => [
@@ -298,17 +294,17 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
             <div className="fixed bottom-6 right-6 z-50">
                 <button
                     onClick={toggleChat}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl shadow-2xl p-4 hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center space-x-3 animate-pulse"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl shadow-2xl p-5 hover:shadow-3xl transform hover:scale-105 transition-all duration-300 flex items-center space-x-4 group animate-bounce-subtle"
                 >
                     <div className="relative">
-                        <FaCommentDots size={28} />
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
+                        <div className="absolute inset-0 bg-white/20 rounded-full animate-ping"></div>
+                        <FaCommentDots size={32} className="relative z-10" />
                     </div>
                     <div className="text-left">
-                        <div className="font-bold text-lg">
+                        <div className="font-bold text-lg tracking-tight">
                             Ask {displayName}
                         </div>
-                        <div className="text-blue-100 text-sm">
+                        <div className="text-blue-100 text-sm font-medium">
                             Get instant help
                         </div>
                     </div>
@@ -320,86 +316,102 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
     // ===== MAIN CHAT UI =====
     return (
         <div
-            className={`fixed z-50 ${
+            className={`fixed z-50 transition-all duration-300 ${
                 isExpanded
-                    ? "left-0 top-0 w-full h-full"
-                    : "bottom-6 right-6 w-96 max-w-[90vw]"
-            }`}
+                    ? "right-6 bottom-6 top-6 w-[32rem] max-w-[95vw] h-[calc(100vh-3rem)]"
+                    : "bottom-6 right-6 w-96 m-1 max-w-[calc(100vw-3rem)]"
+            } ${isSidebar ? "relative inset-auto w-full h-auto" : ""}`}
         >
             <div
-                className={`bg-gradient-to-b from-gray-50 to-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200 ${
-                    isExpanded ? "h-full flex flex-col" : ""
-                }`}
+                className={`bg-white rounded-3xl shadow-2xl  border border-gray-200/60 backdrop-blur-sm flex flex-col ${
+                    isExpanded ? "h-full" : "h-[600px] max-h-[80vh]"
+                } ${isSidebar ? "h-full rounded-2xl" : ""}`}
             >
                 {/* Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 text-white flex justify-between items-center">
-                    <div className="flex items-center">
-                        {slugData?.chatbot?.logoUrl ? (
-                            <img
-                                src={slugData.chatbot.logoUrl}
-                                alt={
-                                    slugData?.chatbot?.companyName || "Company"
-                                }
-                                className="w-8 h-8 rounded-full mr-3 object-cover"
-                            />
-                        ) : (
-                            <FaRobot className="mr-3" size={24} />
-                        )}
-                        <div>
-                            <h3 className="font-bold text-lg">
-                                {slugData?.chatbot?.companyName || "Company"}{" "}
-                                Assistant
-                            </h3>
-                            <p className="text-blue-100 text-sm">
-                                Online • Ready to help
-                            </p>
-                        </div>
-                    </div>
-                    <div className="flex space-x-2">
-                        <button
-                            onClick={() => setIsExpanded(!isExpanded)}
-                            className="p-2 rounded-full hover:bg-blue-500 transition-colors"
-                        >
-                            {isExpanded ? (
-                                <FaCompress size={16} />
+                <div className="bg-gradient-to-r rounded-t-2xl from-blue-600 to-purple-600 p-5 text-white">
+                    <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center space-x-3">
+                            {slugData?.chatbot?.logoUrl ? (
+                                <img
+                                    src={slugData.chatbot.logoUrl}
+                                    alt={
+                                        slugData?.chatbot?.companyName ||
+                                        "Company"
+                                    }
+                                    className="w-10 h-10 rounded-full object-cover border-2 border-white/20"
+                                />
                             ) : (
-                                <FaExpand size={16} />
+                                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                    <FaRobot size={20} />
+                                </div>
                             )}
-                        </button>
-                        <button
-                            onClick={resetChat}
-                            className="p-2 rounded-full hover:bg-blue-500 transition-colors"
-                        >
-                            <FaRedo size={16} />
-                        </button>
-                        <button
-                            onClick={toggleChat}
-                            className="p-2 rounded-full hover:bg-blue-500 transition-colors"
-                        >
-                            <FaTimes size={16} />
-                        </button>
+                            <div>
+                                <h3 className="font-bold text-lg leading-tight">
+                                    {slugData?.chatbot?.companyName ||
+                                        "Company"}{" "}
+                                    Assistant
+                                </h3>
+                                <div className="flex items-center space-x-2 mt-1">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                    <p className="text-blue-100 text-sm font-medium">
+                                        Online
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex space-x-1">
+                            <button
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                className="p-2 rounded-xl hover:bg-white/10 transition-all duration-200"
+                                title={isExpanded ? "Minimize" : "Expand"}
+                            >
+                                {isExpanded ? (
+                                    <FaCompress size={14} />
+                                ) : (
+                                    <FaExpand size={14} />
+                                )}
+                            </button>
+                            <button
+                                onClick={resetChat}
+                                className="p-2 rounded-xl hover:bg-white/10 transition-all duration-200"
+                                title="Reset Chat"
+                            >
+                                <FaRedo size={14} />
+                            </button>
+                            {!isSidebar && (
+                                <button
+                                    onClick={toggleChat}
+                                    className="p-2 rounded-xl hover:bg-white/10 transition-all duration-200"
+                                    title="Close"
+                                >
+                                    <FaTimes size={16} />
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 {/* Chat Content */}
-                <ChatContent
-                    messages={messages}
-                    mode={mode}
-                    faqs={faqs}
-                    formData={formData}
-                    isLoading={isLoading}
-                    input={input}
-                    setInput={setInput}
-                    handleKeyDown={handleKeyDown}
-                    handleSend={handleSend}
-                    handleFormChange={handleFormChange}
-                    handleFormSubmit={handleFormSubmit}
-                    handleFaqSelect={handleFaqSelect}
-                    handleNotInScope={handleNotInScope}
-                    setMode={setMode}
-                    slugData={slugData}
-                    messagesEndRef={messagesEndRef}
-                />
+                <div className="flex-1 flex flex-col min-h-0">
+                    <ChatContent
+                        messages={messages}
+                        mode={mode}
+                        faqs={faqs}
+                        formData={formData}
+                        isLoading={isLoading}
+                        input={input}
+                        setInput={setInput}
+                        handleKeyDown={handleKeyDown}
+                        handleSend={handleSend}
+                        handleFormChange={handleFormChange}
+                        handleFormSubmit={handleFormSubmit}
+                        handleFaqSelect={handleFaqSelect}
+                        handleNotInScope={handleNotInScope}
+                        setMode={setMode}
+                        slugData={slugData}
+                        messagesEndRef={messagesEndRef}
+                    />
+                </div>
             </div>
         </div>
     );
