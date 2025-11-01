@@ -4,51 +4,10 @@ import {
     FaInstagram,
     FaYoutube,
     FaCommentDots,
-    FaGlobeAmericas,
-    FaRocket,
     FaShieldAlt,
 } from "react-icons/fa";
 
 const Details = ({ slugData }) => {
-    if (!slugData || !slugData.chatbot) {
-        return (
-            <div className="w-full">
-                <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-lg p-12 border border-gray-200 text-center">
-                    <div className="max-w-2xl mx-auto">
-                        <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-8">
-                            <FaRocket className="text-white text-3xl" />
-                        </div>
-                        <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                            Welcome to Our Platform
-                        </h2>
-                        <p className="text-gray-600 text-xl leading-relaxed mb-8">
-                            Experience intelligent customer support with our
-                            AI-powered chatbot solution designed for modern
-                            businesses.
-                        </p>
-                        <div className="flex flex-wrap justify-center gap-4">
-                            <div className="bg-blue-50 rounded-2xl px-6 py-3 border border-blue-200">
-                                <span className="text-blue-700 font-semibold">
-                                    24/7 Support
-                                </span>
-                            </div>
-                            <div className="bg-purple-50 rounded-2xl px-6 py-3 border border-purple-200">
-                                <span className="text-purple-700 font-semibold">
-                                    AI Powered
-                                </span>
-                            </div>
-                            <div className="bg-green-50 rounded-2xl px-6 py-3 border border-green-200">
-                                <span className="text-green-700 font-semibold">
-                                    Instant Responses
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     const { chatbot } = slugData;
     const { logoUrl, companyName, description, socialLinks } = chatbot;
     const hasSocialLinks =
@@ -56,123 +15,115 @@ const Details = ({ slugData }) => {
         (socialLinks.facebook || socialLinks.instagram || socialLinks.youtube);
 
     return (
-        <div className="w-full bg-gradient-to-b from-gray-50 to-white py-12 px-6 md:px-12 lg:px-16">
-            {/* Company Header */}
-            <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 mb-12">
-                {logoUrl && (
-                    <div className="flex-shrink-0">
-                        <div className="relative">
+        <section className="relative py-20 overflow-hidden">
+            {/* Floating light gradients like Banner */}
+            <div className="absolute inset-0">
+                <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+                <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+            </div>
+
+            <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-10 text-center text-white">
+                {/* Badge + Logo + Heading */}
+                <div className="flex flex-col items-center mb-10">
+                    {logoUrl && (
+                        <div className="relative mb-6">
                             <img
                                 src={logoUrl}
                                 alt={companyName}
-                                className="w-32 h-32 lg:w-40 lg:h-40 rounded-3xl object-cover border-4 border-white shadow-2xl"
+                                className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-3xl border-2 border-purple-500/40 shadow-[0_0_25px_rgba(139,92,246,0.3)]"
                             />
-                            <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white shadow-lg"></div>
+                            <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-gray-900 shadow-lg animate-pulse"></div>
+                        </div>
+                    )}
+
+                    <div className="inline-flex items-center gap-2 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-full px-4 py-2 mb-6">
+                        <FaShieldAlt className="text-purple-400" />
+                        <span className="text-sm text-gray-300 font-semibold">
+                            Verified Company
+                        </span>
+                    </div>
+
+                    <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
+                        Welcome to{" "}
+                        <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                            {companyName}
+                        </span>
+                    </h1>
+
+                    <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                        {description ||
+                            "We specialize in providing intelligent chatbot solutions that engage customers, save time, and improve satisfaction — all powered by AI."}
+                    </p>
+                </div>
+
+                {/* Social Links */}
+                {hasSocialLinks && (
+                    <div className="mt-16">
+                        <h2 className="text-3xl md:text-4xl font-bold mb-10 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                            Connect With Us
+                        </h2>
+                        <div className="flex flex-wrap justify-center gap-10">
+                            {socialLinks.facebook && (
+                                <a
+                                    href={socialLinks.facebook}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
+                                >
+                                    <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-5 rounded-2xl mb-3 group-hover:border-blue-500/40 transition-all">
+                                        <FaFacebookF className="text-2xl text-blue-400 group-hover:drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-400 group-hover:text-blue-400">
+                                        Facebook
+                                    </span>
+                                </a>
+                            )}
+                            {socialLinks.instagram && (
+                                <a
+                                    href={socialLinks.instagram}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
+                                >
+                                    <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-5 rounded-2xl mb-3 group-hover:border-pink-500/40 transition-all">
+                                        <FaInstagram className="text-2xl text-pink-400 group-hover:drop-shadow-[0_0_15px_rgba(236,72,153,0.5)]" />
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-400 group-hover:text-pink-400">
+                                        Instagram
+                                    </span>
+                                </a>
+                            )}
+                            {socialLinks.youtube && (
+                                <a
+                                    href={socialLinks.youtube}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
+                                >
+                                    <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-5 rounded-2xl mb-3 group-hover:border-red-500/40 transition-all">
+                                        <FaYoutube className="text-2xl text-red-400 group-hover:drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]" />
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-400 group-hover:text-red-400">
+                                        YouTube
+                                    </span>
+                                </a>
+                            )}
                         </div>
                     </div>
                 )}
-                <div className="text-center lg:text-left flex-1">
-                    <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
-                        <FaShieldAlt className="text-blue-600" />
-                        Verified Company
-                    </div>
-                    <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight">
-                        {companyName}
-                    </h1>
-                </div>
-            </div>
 
-            {/* About Section */}
-            {description && (
-                <div className="p-8 mb-12 ">
-                    <div className="flex items-center gap-3 mb-6">
-                        <h2 className="text-3xl font-bold text-gray-900">
-                            Our Story
-                        </h2>
-                    </div>
-                    <p className="text-gray-700 text-lg leading-relaxed">
-                        {description}
-                    </p>
-                </div>
-            )}
-
-            {/* Social Links */}
-            {hasSocialLinks && (
-                <div className="text-center border-t border-gray-200 pt-12">
-                    <h3 className="text-3xl font-bold text-gray-900 mb-8">
-                        Connect With Us
-                    </h3>
-                    <div className="flex flex-wrap justify-center gap-6 md:gap-10">
-                        {socialLinks.facebook && (
-                            <a
-                                href={socialLinks.facebook}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
-                            >
-                                <div className="bg-blue-100 p-5 rounded-2xl mb-3 shadow-lg group-hover:shadow-xl group-hover:bg-blue-200 transition-all duration-300">
-                                    <FaFacebookF className="text-2xl text-blue-600" />
-                                </div>
-                                <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600">
-                                    Facebook
-                                </span>
-                            </a>
-                        )}
-                        {socialLinks.instagram && (
-                            <a
-                                href={socialLinks.instagram}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
-                            >
-                                <div className="bg-gradient-to-br from-pink-100 to-purple-100 p-5 rounded-2xl mb-3 shadow-lg group-hover:shadow-xl group-hover:from-pink-200 group-hover:to-purple-200 transition-all duration-300">
-                                    <FaInstagram className="text-2xl text-gradient-to-r from-pink-600 to-purple-600" />
-                                </div>
-                                <span className="text-sm font-semibold text-gray-700 group-hover:text-pink-600">
-                                    Instagram
-                                </span>
-                            </a>
-                        )}
-                        {socialLinks.youtube && (
-                            <a
-                                href={socialLinks.youtube}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
-                            >
-                                <div className="bg-red-100 p-5 rounded-2xl mb-3 shadow-lg group-hover:shadow-xl group-hover:bg-red-200 transition-all duration-300">
-                                    <FaYoutube className="text-2xl text-red-600" />
-                                </div>
-                                <span className="text-sm font-semibold text-gray-700 group-hover:text-red-600">
-                                    YouTube
-                                </span>
-                            </a>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {/* Chat CTA */}
-            <div className="mt-12 border-t border-gray-200 pt-12 text-center">
-                <div className="max-w-2xl mx-auto">
-                    <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl p-8 text-white shadow-2xl">
-                        <h3 className="text-2xl font-bold mb-4">
-                            Ready to Get Started?
-                        </h3>
-                        <p className="text-blue-100 text-lg mb-6">
-                            Our AI assistant is here to help you 24/7 with any
-                            questions or support you need.
-                        </p>
-                        <div className="flex items-center justify-center gap-3 text-blue-100">
+                {/* CTA */}
+                <div className="mt-20">
+                    <div className="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-10 py-5 rounded-2xl shadow-[0_0_30px_rgba(139,92,246,0.4)] hover:shadow-[0_0_40px_rgba(139,92,246,0.6)] transition-all duration-300">
+                        <div className="flex items-center justify-center gap-3">
                             <FaCommentDots className="text-xl" />
-                            <span className="text-lg font-semibold">
-                                Click the chat button to start conversation
-                            </span>
+                            <span>Start Chatting Now</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     );
 };
 

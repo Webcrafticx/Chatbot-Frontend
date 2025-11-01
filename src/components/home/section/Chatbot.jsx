@@ -8,13 +8,11 @@ import {
     FaCompress,
     FaRedo,
     FaPaperPlane,
-    FaUser,
 } from "react-icons/fa";
 import API_BASE_URL from "../../../config/api";
 import ChatContent from "./ChatContent";
 
 function Chatbot({ slugData, slug, isSidebar = false }) {
-    // ===== STATE =====
     const [messages, setMessages] = useState([
         {
             text:
@@ -36,43 +34,33 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
         phone: "",
         message: "",
     });
-
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
 
-    // ===== FAQ GENERATION =====
     const generateDynamicFaqs = () => {
-        if (!slugData?.list || !Array.isArray(slugData.list)) {
-            return [];
-        }
+        if (!slugData?.list || !Array.isArray(slugData.list)) return [];
         return slugData.list.map((item) => ({
             question: item.question,
             answer: item.answer,
             keywords: item.keywords || [],
         }));
     };
-
     const [faqs, setFaqs] = useState(generateDynamicFaqs());
 
     useEffect(() => {
         setFaqs(generateDynamicFaqs());
     }, [slugData]);
 
-    // ===== SCROLL TO BOTTOM =====
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    // ===== API CALL: SEND MESSAGE =====
     const sendMessageToAPI = async (message) => {
         if (!slug) return null;
         try {
             const token = localStorage.getItem("token");
-            const headers = {
-                "Content-Type": "application/json",
-            };
+            const headers = { "Content-Type": "application/json" };
             if (token) headers["Authorization"] = `Token ${token}`;
-
             const response = await fetch(
                 `${API_BASE_URL}/chat/${slug}/message`,
                 {
@@ -84,29 +72,20 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                     }),
                 }
             );
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("API Error:", errorText);
-                throw new Error("API Error");
-            }
-
-            const data = await response.json();
-            return data;
+            if (!response.ok) throw new Error("API Error");
+            return await response.json();
         } catch (err) {
             console.error("Error sending message:", err);
             return null;
         }
     };
 
-    // ===== API CALL: SUBMIT FORM =====
     const submitQueryToAPI = async (queryData) => {
         if (!slug) return false;
         try {
             const token = localStorage.getItem("token");
             const headers = { "Content-Type": "application/json" };
             if (token) headers["Authorization"] = `Token ${token}`;
-
             const response = await fetch(`${API_BASE_URL}/chat/${slug}/query`, {
                 method: "POST",
                 headers,
@@ -118,7 +97,6 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                     type: "contact_form",
                 }),
             });
-
             if (!response.ok) throw new Error("API response not ok");
             return true;
         } catch (err) {
@@ -127,8 +105,6 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
         }
     };
 
-    // ===== HANDLERS =====
-
     const handleFaqSelect = async (faq) => {
         setSelectedFaq(faq);
         setMessages((prev) => [
@@ -136,9 +112,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
             { text: faq.question, sender: "user" },
             { text: faq.answer, sender: "bot" },
         ]);
-
         if (slug) await sendMessageToAPI(faq.question);
-
         setTimeout(() => setMode("suggestions"), 1000);
     };
 
@@ -163,11 +137,9 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-
         try {
             const success = await submitQueryToAPI(formData);
             const companyName = slugData?.chatbot?.companyName || "We";
-
             if (success) {
                 setMessages((prev) => [
                     ...prev,
@@ -191,7 +163,6 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                 ]);
             }
         } catch (err) {
-            console.error(err);
             setMessages((prev) => [
                 ...prev,
                 {
@@ -207,46 +178,32 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
 
     const handleSend = async () => {
         if (!input.trim()) return;
-
         const userMessage = { text: input, sender: "user" };
         setMessages((prev) => [...prev, userMessage]);
         setInput("");
         setIsLoading(true);
-
         try {
             const apiResponse = await sendMessageToAPI(input);
-
             if (apiResponse?.chat?.answer) {
                 const answerType = apiResponse.chat.type;
-
                 setMessages((prev) => [
                     ...prev,
                     { text: apiResponse.chat.answer, sender: "bot" },
                 ]);
-
-                if (answerType === "fallback") {
-                    setTimeout(() => {
-                        setMode("form");
-                    }, 1000);
-                }
-
-                setIsLoading(false);
-                return;
+                if (answerType === "fallback")
+                    setTimeout(() => setMode("form"), 1000);
+            } else {
+                const companyName =
+                    slugData?.chatbot?.companyName || "our support team";
+                setMessages((prev) => [
+                    ...prev,
+                    {
+                        text: `Thanks for your message! ${companyName} will contact you soon.`,
+                        sender: "bot",
+                    },
+                ]);
             }
-
-            const companyName =
-                slugData?.chatbot?.companyName || "our support team";
-            setMessages((prev) => [
-                ...prev,
-                {
-                    text: `Thanks for your message! ${companyName} will contact you soon.`,
-                    sender: "bot",
-                },
-            ]);
-            setIsLoading(false);
         } catch (err) {
-            console.error("Error in handleSend:", err);
-            setIsLoading(false);
             setMessages((prev) => [
                 ...prev,
                 {
@@ -254,6 +211,8 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                     sender: "bot",
                 },
             ]);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -264,7 +223,6 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
         }
     };
 
-    // ===== UI CONTROL =====
     const toggleChat = () => {
         if (!isSidebar) {
             setIsOpen(!isOpen);
@@ -283,37 +241,26 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
         setInput("");
     };
 
-    // ===== CLOSED BUTTON VIEW =====
     if (!isSidebar && !isOpen) {
         const companyName = slugData?.chatbot?.companyName || "AI";
-        const displayName =
-            companyName.length > 10
-                ? `${companyName.substring(0, 10)}...`
-                : companyName;
         return (
             <div className="fixed bottom-6 right-6 z-50">
                 <button
                     onClick={toggleChat}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl shadow-2xl p-5 hover:shadow-3xl transform hover:scale-105 transition-all duration-300 flex items-center space-x-4 group animate-bounce-subtle"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl shadow-lg p-5 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transform hover:scale-105 transition-all duration-300 flex items-center space-x-3 group"
                 >
-                    <div className="relative">
-                        <div className="absolute inset-0 bg-white/20 rounded-full animate-ping"></div>
-                        <FaCommentDots size={32} className="relative z-10" />
-                    </div>
-                    <div className="text-left">
-                        <div className="font-bold text-lg tracking-tight">
-                            Ask {displayName}
-                        </div>
-                        <div className="text-blue-100 text-sm font-medium">
-                            Get instant help
-                        </div>
-                    </div>
+                    <FaCommentDots
+                        size={28}
+                        className="animate-bounce-subtle"
+                    />
+                    <span className="font-semibold tracking-tight">
+                        Chat with {companyName}
+                    </span>
                 </button>
             </div>
         );
     }
 
-    // ===== MAIN CHAT UI =====
     return (
         <div
             className={`fixed z-50 transition-all duration-300 ${
@@ -323,13 +270,13 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
             } ${isSidebar ? "relative inset-auto w-full h-auto" : ""}`}
         >
             <div
-                className={`bg-white rounded-3xl shadow-2xl  border border-gray-200/60 backdrop-blur-sm flex flex-col ${
+                className={`bg-gray-900/70 backdrop-blur-md border border-gray-700/50 rounded-3xl shadow-[0_0_25px_rgba(59,130,246,0.2)] flex flex-col  ${
                     isExpanded ? "h-full" : "h-[600px] max-h-[80vh]"
                 } ${isSidebar ? "h-full rounded-2xl" : ""}`}
             >
                 {/* Header */}
-                <div className="bg-gradient-to-r rounded-t-2xl from-blue-600 to-purple-600 p-5 text-white">
-                    <div className="flex justify-between items-start mb-2">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-5 text-white rounded-t-3xl">
+                    <div className="flex justify-between items-center">
                         <div className="flex items-center space-x-3">
                             {slugData?.chatbot?.logoUrl ? (
                                 <img
@@ -346,23 +293,23 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                                 </div>
                             )}
                             <div>
-                                <h3 className="font-bold text-lg leading-tight">
+                                <h3 className="font-bold text-lg">
                                     {slugData?.chatbot?.companyName ||
                                         "Company"}{" "}
                                     Assistant
                                 </h3>
-                                <div className="flex items-center space-x-2 mt-1">
+                                <div className="flex items-center space-x-2">
                                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                    <p className="text-blue-100 text-sm font-medium">
+                                    <span className="text-blue-100 text-sm">
                                         Online
-                                    </p>
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex space-x-1">
+                        <div className="flex space-x-2">
                             <button
                                 onClick={() => setIsExpanded(!isExpanded)}
-                                className="p-2 rounded-xl hover:bg-white/10 transition-all duration-200"
+                                className="p-2 rounded-xl hover:bg-white/10 transition"
                                 title={isExpanded ? "Minimize" : "Expand"}
                             >
                                 {isExpanded ? (
@@ -373,7 +320,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                             </button>
                             <button
                                 onClick={resetChat}
-                                className="p-2 rounded-xl hover:bg-white/10 transition-all duration-200"
+                                className="p-2 rounded-xl hover:bg-white/10 transition"
                                 title="Reset Chat"
                             >
                                 <FaRedo size={14} />
@@ -381,7 +328,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                             {!isSidebar && (
                                 <button
                                     onClick={toggleChat}
-                                    className="p-2 rounded-xl hover:bg-white/10 transition-all duration-200"
+                                    className="p-2 rounded-xl hover:bg-white/10 transition"
                                     title="Close"
                                 >
                                     <FaTimes size={16} />
@@ -392,7 +339,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                 </div>
 
                 {/* Chat Content */}
-                <div className="flex-1 flex flex-col min-h-0">
+                <div className="flex flex-col flex-1 min-h-0 bg-gray-800/50 text-white">
                     <ChatContent
                         messages={messages}
                         mode={mode}
