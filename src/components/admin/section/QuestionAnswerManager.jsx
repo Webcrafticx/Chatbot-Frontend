@@ -57,7 +57,7 @@ const QuestionAnswerManager = () => {
       }
     } catch (error) {
       console.error("Error fetching Q&As:", error);
-      alert("Failed to fetch Q&As");
+      // alert("Failed to fetch Q&As");
     } finally {
       setLoading(false);
     }
@@ -127,7 +127,7 @@ const QuestionAnswerManager = () => {
         setFormData({ question: "", answer: "", keywords: "", isDisplay: false });
       } catch (error) {
         console.error("Error saving Q&A:", error);
-        alert("Failed to save Q&A");
+        // alert("Failed to save Q&A");
       } finally {
         setLoading(false);
       }
@@ -166,7 +166,7 @@ const QuestionAnswerManager = () => {
       setDeleteId(null);
     } catch (error) {
       console.error("Error deleting Q&A:", error);
-      alert("Failed to delete Q&A");
+      // alert("Failed to delete Q&A");
     } finally {
       setLoading(false);
     }

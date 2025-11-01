@@ -3,7 +3,7 @@ import API_BASE_URL from "../../config/api";
 
 export const registerApi = async (name, email, password, role = "user") => {
   try {
-    const token = localStorage.getItem("token");
+    // const token = localStorage.getItem("token");
 
     const response = await axios.post(
       `${API_BASE_URL}/auth/register`,
@@ -11,7 +11,7 @@ export const registerApi = async (name, email, password, role = "user") => {
       {
         headers: {
           "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
+          // ...(token && { Authorization: `Bearer ${token}` }),
         },
       }
     );
@@ -49,5 +49,26 @@ export const deleteUser = async (userId) => {
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: "Failed to delete user." };
+  }
+};
+
+// POST /api/auth/admin/renew - Renew user subscription
+export const renewSubscriptionApi = async (renewData) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.post(
+      `${API_BASE_URL}/auth/admin/renew`,
+      renewData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error renewing subscription:", error);
+    throw error;
   }
 };

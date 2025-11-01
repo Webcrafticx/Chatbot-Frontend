@@ -23,7 +23,7 @@ const SuperAdminLayout = ({ children }) => {
       {/* Overlay for mobile sidebar */}
       {isMobileSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden"
+          className="fixed inset-0 backdrop-blur-lg bg-opacity-50 z-10 lg:hidden"
           onClick={toggleMobileSidebar}
         ></div>
       )}

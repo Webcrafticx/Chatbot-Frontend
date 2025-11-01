@@ -27,14 +27,14 @@ const Sidebar = ({ isMobileSidebarOpen, toggleMobileSidebar }) => {
       ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
     >
       {/* Mobile menu button */}
-      <div className="lg:hidden absolute right-0 top-0 -mr-12 p-4">
+      {/* <div className="lg:hidden absolute right-0 top-0 -mr-12 p-4">
         <button 
           onClick={toggleMobileSidebar}
           className="text-gray-500 hover:text-gray-700 focus:outline-none"
         >
           <Menu size={24} />
         </button>
-      </div>
+      </div> */}
 
       {/* Logo replaced with text - changed border to grey */}
       <div className="px-6 py-6 border-b border-gray-200 mt-4">
