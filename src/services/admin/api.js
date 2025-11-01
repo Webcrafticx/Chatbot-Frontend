@@ -4,26 +4,26 @@ import API_BASE_URL from "../../config/api";
 // Common function to get headers
 const getHeaders = (isFormData = false) => {
   const token = localStorage.getItem("token");
-  return {
-    ...(isFormData ? {} : { "Content-Type": "application/json" }),
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
+  const headers = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+  if (!isFormData) headers["Content-Type"] = "application/json";
+  return headers;
 };
 
 
 
 // Helper to build FormData (handles files and arrays)
-const buildFormData = (data) => {
-  const formData = new FormData();
-  for (const key in data) {
-    if (Array.isArray(data[key])) {
-      data[key].forEach((item) => formData.append(`${key}[]`, item));
-    } else if (data[key] !== undefined && data[key] !== null) {
-      formData.append(key, data[key]);
-    }
-  }
-  return formData;
-};
+// const buildFormData = (data) => {
+//   const formData = new FormData();
+//   for (const key in data) {
+//     if (Array.isArray(data[key])) {
+//       data[key].forEach((item) => formData.append(`${key}[]`, item));
+//     } else if (data[key] !== undefined && data[key] !== null) {
+//       formData.append(key, data[key]);
+//     }
+//   }
+//   return formData;
+// };
 
 // POST /api/user/chatbots - Create a new chatbot
 export const createChatbotApi = async (chatbotData) => {
@@ -46,14 +46,16 @@ export const createChatbotApi = async (chatbotData) => {
 };
 
 // PATCH /api/chatbot/{id} - Update an existing chatbot
-
 export const updateChatbotApi = async (chatbotId, formData) => {
   try {
     const response = await axios.patch(
       `${API_BASE_URL}/chatbot/${chatbotId}`,
       formData,
       {
-        headers: getHeaders(true), // leave blank for multipart
+        headers: {
+          ...getHeaders(true),
+          "Content-Type": "multipart/form-data",
+        },
       }
     );
     return response.data;
@@ -195,6 +197,23 @@ export const updateVisitorStatusApi = async (slug, visitorId, statusData) => {
     return response.data;
   } catch (error) {
     console.error("Error updating visitor status:", error);
+    throw error;
+  }
+};
+
+// POST /api/auth/renew - Renew user subscription
+export const renewSubscriptionApi = async (renewData) => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/auth/renew`,
+      renewData,
+      {
+        headers: getHeaders(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error renewing subscription:", error);
     throw error;
   }
 };
