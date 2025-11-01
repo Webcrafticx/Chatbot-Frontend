@@ -5,6 +5,8 @@ import HomeLayout from "../../layout/HomeLayout";
 import Chatbot from "../../components/home/section/Chatbot";
 import API_BASE_URL from "../../config/api";
 import Details from "../../components/home/section/Details";
+import ParticleBackground from "../../pages/landingpage/particelBackground";
+import MagneticElements from "../../pages/landingpage/magneticElement";
 
 const Home = () => {
     const { slug } = useParams();
@@ -12,42 +14,14 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch slug data from API
     const fetchSlugData = async () => {
-        if (!slug) {
-            console.log("No slug detected - using default behavior");
-            setLoading(false);
-            return;
-        }
-
-        console.log("Slug detected:", slug);
-
         try {
-            const token = localStorage.getItem("token");
-            const headers = {
-                "Content-Type": "application/json",
-            };
-
-            // Add authorization header if token exists
-            if (token) {
-                headers["Authorization"] = `Token ${token}`;
-            }
-
             const response = await fetch(
-                `${API_BASE_URL}/chat/${slug}/display`,
-                {
-                    headers: headers,
-                }
+                `${API_BASE_URL}/chat/${slug}/display`
             );
-
-            if (!response.ok) {
-                throw new Error(
-                    `Network response was not ok: ${response.status}`
-                );
-            }
-
+            if (!response.ok)
+                throw new Error(`Network error: ${response.status}`);
             const data = await response.json();
-            console.log("Slug API Response:", data);
             setSlugData(data);
         } catch (error) {
             console.error("Error fetching slug data:", error);
@@ -61,131 +35,83 @@ const Home = () => {
         fetchSlugData();
     }, [slug]);
 
-    // Modern loading skeleton
     if (loading) {
         return (
-            <HomeLayout>
-                <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-7xl mx-auto">
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center relative overflow-hidden">
+                <ParticleBackground />
+                <MagneticElements />
+
+                <div className="relative z-10 w-full max-w-3xl mx-auto px-6">
+                    <div className="bg-gray-800/60 backdrop-blur-md rounded-3xl shadow-2xl border border-gray-700 p-8 space-y-6 animate-pulse">
                         {/* Header skeleton */}
-                        <div className="mb-8">
-                            <div className="h-8 bg-gray-200 rounded-lg w-1/3 mb-4 animate-pulse"></div>
-                            <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-gray-700 rounded-full"></div>
+                                <div>
+                                    <div className="w-32 h-4 bg-gray-700 rounded mb-2"></div>
+                                    <div className="w-20 h-3 bg-gray-700 rounded"></div>
+                                </div>
+                            </div>
+                            <div className="w-8 h-8 bg-gray-700 rounded-full"></div>
                         </div>
 
-                        <div className="flex flex-col xl:flex-row gap-8">
-                            {/* Left content skeleton */}
-                            <div className="flex-1 space-y-6">
-                                {[...Array(4)].map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100"
-                                    >
-                                        <div className="h-6 bg-gray-200 rounded w-1/4 mb-4 animate-pulse"></div>
-                                        <div className="space-y-2">
-                                            <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                                            <div className="h-4 bg-gray-200 rounded w-5/6 animate-pulse"></div>
-                                            <div className="h-4 bg-gray-200 rounded w-4/6 animate-pulse"></div>
-                                        </div>
-                                    </div>
-                                ))}
+                        {/* Chat bubbles skeleton */}
+                        <div className="space-y-4 mt-8">
+                            <div className="flex items-start space-x-3">
+                                <div className="w-8 h-8 bg-gray-700 rounded-full"></div>
+                                <div className="flex-1 space-y-2">
+                                    <div className="w-3/4 h-3 bg-gray-700 rounded"></div>
+                                    <div className="w-1/2 h-3 bg-gray-700 rounded"></div>
+                                </div>
                             </div>
 
-                            {/* Right chatbot skeleton */}
-                            <div className="xl:w-96">
-                                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 h-96 animate-pulse">
-                                    <div className="h-8 bg-gray-200 rounded-lg mb-6 animate-pulse"></div>
-                                    <div className="space-y-4">
-                                        {[...Array(3)].map((_, i) => (
-                                            <div key={i} className="flex gap-3">
-                                                <div className="h-10 w-10 bg-gray-200 rounded-full animate-pulse"></div>
-                                                <div className="flex-1 space-y-2">
-                                                    <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                                                    <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                            <div className="flex items-start justify-end space-x-3">
+                                <div className="flex-1 space-y-2 text-right">
+                                    <div className="ml-auto w-2/3 h-3 bg-gray-700 rounded"></div>
+                                    <div className="ml-auto w-1/3 h-3 bg-gray-700 rounded"></div>
+                                </div>
+                                <div className="w-8 h-8 bg-gray-700 rounded-full"></div>
+                            </div>
+
+                            <div className="flex items-start space-x-3">
+                                <div className="w-8 h-8 bg-gray-700 rounded-full"></div>
+                                <div className="flex-1 space-y-2">
+                                    <div className="w-2/3 h-3 bg-gray-700 rounded"></div>
+                                    <div className="w-1/3 h-3 bg-gray-700 rounded"></div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </HomeLayout>
-        );
-    }
 
-    // Modern error state
-    if (error && !slugData) {
-        return (
-            <HomeLayout>
-                <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-                            <div className="bg-white rounded-3xl shadow-lg p-8 max-w-md w-full border border-gray-200">
-                                <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <svg
-                                        className="w-10 h-10 text-red-500"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
-                                        />
-                                    </svg>
-                                </div>
-                                <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                                    Unable to Load
-                                </h2>
-                                <p className="text-gray-600 mb-2">
-                                    We encountered an error while loading the
-                                    data:
-                                </p>
-                                <p className="text-red-500 font-medium mb-6 bg-red-50 py-2 px-4 rounded-lg">
-                                    {error}
-                                </p>
-                                <button
-                                    onClick={fetchSlugData}
-                                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                                >
-                                    Try Again
-                                </button>
-                            </div>
-                        </div>
+                        {/* Input skeleton */}
+                        <div className="mt-6 h-12 bg-gray-700/70 rounded-2xl"></div>
                     </div>
+
+                    {/* Subtext shimmer */}
+                    <p className="text-gray-500 text-center mt-6 animate-pulse">
+                        Preparing your chatbot experience...
+                    </p>
                 </div>
-            </HomeLayout>
+            </div>
         );
     }
 
     return (
         <HomeLayout>
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-                {/* Main Content */}
-                <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-                    {/* Responsive Grid Layout */}
+            <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+                <ParticleBackground />
+                <MagneticElements />
+
+                <div className="relative z-10 max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col xl:flex-row gap-8">
-                        {/* Left Content - Company Details */}
+                        {/* Left Content */}
                         <div className="flex-1">
-                            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                                <Details slugData={slugData} />
-                            </div>
-                        </div>
-
-                        {/* Right Sidebar - Chatbot */}
-
-                        <div className="sticky top-8">
-                            <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden transform transition-all duration-300 hover:shadow-xl">
-                                <Chatbot slugData={slugData} slug={slug} />
-                            </div>
+                            <Details slugData={slugData} />
                         </div>
                     </div>
                 </div>
             </div>
+
+            <Chatbot slugData={slugData} slug={slug} />
         </HomeLayout>
     );
 };
