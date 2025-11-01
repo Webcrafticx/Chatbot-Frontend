@@ -1,8 +1,13 @@
 import React from "react";
+import { ReactTyped } from "react-typed";
+
 import {
     FaFacebookF,
     FaInstagram,
     FaYoutube,
+    FaWhatsapp,
+    FaGlobe,
+    FaMapMarkerAlt,
     FaCommentDots,
     FaShieldAlt,
 } from "react-icons/fa";
@@ -45,15 +50,28 @@ const Details = ({ slugData }) => {
                     </div>
 
                     <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
-                        Welcome to{" "}
                         <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
                             {companyName}
                         </span>
                     </h1>
 
-                    <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                        {description ||
-                            "We specialize in providing intelligent chatbot solutions that engage customers, save time, and improve satisfaction — all powered by AI."}
+                    <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed text-justify">
+                        {description ? (
+                            <ReactTyped
+                                strings={[description]}
+                                typeSpeed={25}
+                                backSpeed={0}
+                                showCursor={false}
+                            />
+                        ) : (
+                            <ReactTyped
+                                strings={[
+                                    "We create intelligent chatbot experiences to connect your business with your customers effortlessly.",
+                                ]}
+                                typeSpeed={25}
+                                showCursor={false}
+                            />
+                        )}
                     </p>
                 </div>
 
@@ -63,7 +81,62 @@ const Details = ({ slugData }) => {
                         <h2 className="text-3xl md:text-4xl font-bold mb-10 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                             Connect With Us
                         </h2>
+
                         <div className="flex flex-wrap justify-center gap-10">
+                            {/* 🌍 Website */}
+                            {socialLinks.website && (
+                                <a
+                                    href={socialLinks.website}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
+                                >
+                                    <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-5 rounded-2xl mb-3 group-hover:border-cyan-500/40 transition-all">
+                                        <FaGlobe className="text-2xl text-cyan-400 group-hover:drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]" />
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-400 group-hover:text-cyan-400">
+                                        Website
+                                    </span>
+                                </a>
+                            )}
+
+                            {/* 📍 Location */}
+                            {socialLinks.location && (
+                                <a
+                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                        socialLinks.location
+                                    )}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
+                                >
+                                    <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-5 rounded-2xl mb-3 group-hover:border-green-500/40 transition-all">
+                                        <FaMapMarkerAlt className="text-2xl text-green-400 group-hover:drop-shadow-[0_0_15px_rgba(74,222,128,0.5)]" />
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-400 group-hover:text-green-400">
+                                        Location
+                                    </span>
+                                </a>
+                            )}
+
+                            {/* 💬 WhatsApp */}
+                            {socialLinks.whatsapp && (
+                                <a
+                                    href={`https://wa.me/${socialLinks.whatsapp}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
+                                >
+                                    <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-5 rounded-2xl mb-3 group-hover:border-green-500/40 transition-all">
+                                        <FaWhatsapp className="text-2xl text-green-400 group-hover:drop-shadow-[0_0_15px_rgba(74,222,128,0.5)]" />
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-400 group-hover:text-green-400">
+                                        WhatsApp
+                                    </span>
+                                </a>
+                            )}
+
+                            {/* 📘 Facebook */}
                             {socialLinks.facebook && (
                                 <a
                                     href={socialLinks.facebook}
@@ -79,6 +152,8 @@ const Details = ({ slugData }) => {
                                     </span>
                                 </a>
                             )}
+
+                            {/* 📸 Instagram */}
                             {socialLinks.instagram && (
                                 <a
                                     href={socialLinks.instagram}
@@ -94,6 +169,8 @@ const Details = ({ slugData }) => {
                                     </span>
                                 </a>
                             )}
+
+                            {/* ▶️ YouTube */}
                             {socialLinks.youtube && (
                                 <a
                                     href={socialLinks.youtube}
@@ -112,16 +189,6 @@ const Details = ({ slugData }) => {
                         </div>
                     </div>
                 )}
-
-                {/* CTA */}
-                <div className="mt-20">
-                    <div className="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-10 py-5 rounded-2xl shadow-[0_0_30px_rgba(139,92,246,0.4)] hover:shadow-[0_0_40px_rgba(139,92,246,0.6)] transition-all duration-300">
-                        <div className="flex items-center justify-center gap-3">
-                            <FaCommentDots className="text-xl" />
-                            <span>Start Chatting Now</span>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
     );
