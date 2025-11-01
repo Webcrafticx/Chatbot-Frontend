@@ -7,22 +7,12 @@ import {
     FaExpand,
     FaCompress,
     FaRedo,
-    FaPaperPlane,
 } from "react-icons/fa";
 import API_BASE_URL from "../../../config/api";
 import ChatContent from "./ChatContent";
 
 function Chatbot({ slugData, slug, isSidebar = false }) {
-    const [messages, setMessages] = useState([
-        {
-            text:
-                slugData?.chatbot?.welcomeMessage ||
-                (slugData?.chatbot?.companyName
-                    ? `Hello! I'm your virtual assistant from ${slugData.chatbot.companyName}. How can I help you today?`
-                    : "Hello! I'm your virtual assistant. How can I help you today?"),
-            sender: "bot",
-        },
-    ]);
+    const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [mode, setMode] = useState("suggestions");
     const [selectedFaq, setSelectedFaq] = useState(null);
@@ -36,6 +26,16 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
     });
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
+
+    // ✅ initialize welcome message with typing effect trigger
+    useEffect(() => {
+        const welcome =
+            slugData?.chatbot?.welcomeMessage ||
+            (slugData?.chatbot?.companyName
+                ? `Hello! I'm your virtual assistant from ${slugData.chatbot.companyName}. How can I help you today?`
+                : "Hello! I'm your virtual assistant. How can I help you today?");
+        setMessages([{ text: welcome, sender: "bot" }]);
+    }, [slugData]);
 
     const generateDynamicFaqs = () => {
         if (!slugData?.list || !Array.isArray(slugData.list)) return [];
@@ -230,30 +230,51 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
         }
     };
 
+    // ✅ FIXED resetChat: re-triggers typing animation
     const resetChat = () => {
         const welcome =
             slugData?.chatbot?.welcomeMessage ||
             (slugData?.chatbot?.companyName
                 ? `Hello! I'm your virtual assistant from ${slugData.chatbot.companyName}. How can I help you today?`
                 : "Hello! I'm your virtual assistant. How can I help you today?");
-        setMessages([{ text: welcome, sender: "bot" }]);
-        setMode("suggestions");
-        setInput("");
+        setMessages([]); // clear chat first
+        setTimeout(() => {
+            setMessages([{ text: welcome, sender: "bot" }]); // re-trigger ReactTyped
+            setMode("suggestions");
+            setInput("");
+        }, 200);
     };
 
     if (!isSidebar && !isOpen) {
         const companyName = slugData?.chatbot?.companyName || "AI";
+
         return (
-            <div className="fixed bottom-6 right-6 z-50">
+            <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+                {/* 🟣 Mobile Button (only icon) */}
                 <button
                     onClick={toggleChat}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl shadow-lg p-5 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transform hover:scale-105 transition-all duration-300 flex items-center space-x-3 group"
+                    className="flex sm:hidden items-center justify-center w-14 h-14 rounded-full 
+                bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg 
+                hover:shadow-[0_0_20px_rgba(147,51,234,0.4)] transition-all duration-300 
+                hover:scale-110 animate-pulse"
+                    title={`Chat with ${companyName}`}
                 >
-                    <FaCommentDots
-                        size={28}
-                        className="animate-bounce-subtle"
-                    />
-                    <span className="font-semibold tracking-tight">
+                    <FaCommentDots size={22} />
+                </button>
+
+                {/* 🔵 Desktop Button (text + icon) */}
+                <button
+                    onClick={toggleChat}
+                    className="hidden sm:flex items-center space-x-3 px-5 py-4 mb-16 
+                rounded-2xl bg-gray-900/80 backdrop-blur-md border border-gray-700 
+                text-gray-100 font-medium tracking-tight
+                shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(147,51,234,0.4)] 
+                transition-all duration-300 hover:scale-[1.07] group"
+                >
+                    <div className="p-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-inner">
+                        <FaCommentDots size={22} className="animate-pulse" />
+                    </div>
+                    <span className="font-semibold text-sm sm:text-base text-gray-200 group-hover:text-white transition-colors">
                         Chat with {companyName}
                     </span>
                 </button>
