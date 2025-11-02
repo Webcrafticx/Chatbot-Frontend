@@ -1,4 +1,3 @@
-// Chatbot.jsx
 import React, { useState, useRef, useEffect } from "react";
 import {
     FaRobot,
@@ -256,7 +255,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                     className="flex sm:hidden items-center justify-center w-14 h-14 rounded-full 
                 bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg 
                 hover:shadow-[0_0_20px_rgba(147,51,234,0.4)] transition-all duration-300 
-                hover:scale-110 animate-pulse"
+                hover:scale-110 animate-pulse cursor-pointer"
                     title={`Chat with ${companyName}`}
                 >
                     <FaCommentDots size={22} />
@@ -269,7 +268,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                 rounded-2xl bg-gray-900/80 backdrop-blur-md border border-gray-700 
                 text-gray-100 font-medium tracking-tight
                 shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(147,51,234,0.4)] 
-                transition-all duration-300 hover:scale-[1.07] group"
+                transition-all duration-300 hover:scale-[1.07] group cursor-pointer"
                 >
                     <div className="p-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-inner">
                         <FaCommentDots size={22} className="animate-pulse" />
@@ -291,7 +290,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
             } ${isSidebar ? "relative inset-auto w-full h-auto" : ""}`}
         >
             <div
-                className={`bg-gray-900/70 backdrop-blur-md border border-gray-700/50 rounded-3xl shadow-[0_0_25px_rgba(59,130,246,0.2)] flex flex-col  ${
+                className={`bg-gray-900/70 backdrop-blur-md border border-gray-700/50 rounded-3xl shadow-[0_0_25px_rgba(59,130,246,0.2)] flex flex-col ${
                     isExpanded ? "h-full" : "h-[600px] max-h-[80vh]"
                 } ${isSidebar ? "h-full rounded-2xl" : ""}`}
             >
@@ -306,10 +305,10 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                                         slugData?.chatbot?.companyName ||
                                         "Company"
                                     }
-                                    className="w-10 h-10 rounded-full object-cover border-2 border-white/20"
+                                    className="w-10 h-10 rounded-full object-cover border-2 border-white/20 cursor-pointer"
                                 />
                             ) : (
-                                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center cursor-pointer">
                                     <FaRobot size={20} />
                                 </div>
                             )}
@@ -330,7 +329,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                         <div className="flex space-x-2">
                             <button
                                 onClick={() => setIsExpanded(!isExpanded)}
-                                className="p-2 rounded-xl hover:bg-white/10 transition"
+                                className="p-2 rounded-xl hover:bg-white/10 transition cursor-pointer"
                                 title={isExpanded ? "Minimize" : "Expand"}
                             >
                                 {isExpanded ? (
@@ -341,7 +340,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                             </button>
                             <button
                                 onClick={resetChat}
-                                className="p-2 rounded-xl hover:bg-white/10 transition"
+                                className="p-2 rounded-xl hover:bg-white/10 transition cursor-pointer"
                                 title="Reset Chat"
                             >
                                 <FaRedo size={14} />
@@ -349,7 +348,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                             {!isSidebar && (
                                 <button
                                     onClick={toggleChat}
-                                    className="p-2 rounded-xl hover:bg-white/10 transition"
+                                    className="p-2 rounded-xl hover:bg-white/10 transition cursor-pointer"
                                     title="Close"
                                 >
                                     <FaTimes size={16} />

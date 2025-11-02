@@ -36,13 +36,13 @@ const Details = ({ slugData }) => {
                             <img
                                 src={logoUrl}
                                 alt={companyName}
-                                className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-3xl border-2 border-purple-500/40 shadow-[0_0_25px_rgba(139,92,246,0.3)]"
+                                className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-3xl border-2 border-purple-500/40 shadow-[0_0_25px_rgba(139,92,246,0.3)] cursor-pointer"
                             />
                             <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-gray-900 shadow-lg animate-pulse"></div>
                         </div>
                     )}
 
-                    <div className="inline-flex items-center gap-2 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-full px-4 py-2 mb-6">
+                    <div className="inline-flex items-center gap-2 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-full px-4 py-2 mb-6 cursor-pointer">
                         <FaShieldAlt className="text-purple-400" />
                         <span className="text-sm text-gray-300 font-semibold">
                             Verified Company
@@ -59,7 +59,7 @@ const Details = ({ slugData }) => {
                         {description ? (
                             <ReactTyped
                                 strings={[description]}
-                                typeSpeed={25}
+                                typeSpeed={8}
                                 backSpeed={0}
                                 showCursor={false}
                             />
@@ -89,7 +89,7 @@ const Details = ({ slugData }) => {
                                     href={socialLinks.website}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
+                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110 cursor-pointer"
                                 >
                                     <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-5 rounded-2xl mb-3 group-hover:border-cyan-500/40 transition-all">
                                         <FaGlobe className="text-2xl text-cyan-400 group-hover:drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]" />
@@ -108,7 +108,7 @@ const Details = ({ slugData }) => {
                                     )}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
+                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110 cursor-pointer"
                                 >
                                     <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-5 rounded-2xl mb-3 group-hover:border-green-500/40 transition-all">
                                         <FaMapMarkerAlt className="text-2xl text-green-400 group-hover:drop-shadow-[0_0_15px_rgba(74,222,128,0.5)]" />
@@ -125,7 +125,7 @@ const Details = ({ slugData }) => {
                                     href={`https://wa.me/${socialLinks.whatsapp}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
+                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110 cursor-pointer"
                                 >
                                     <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-5 rounded-2xl mb-3 group-hover:border-green-500/40 transition-all">
                                         <FaWhatsapp className="text-2xl text-green-400 group-hover:drop-shadow-[0_0_15px_rgba(74,222,128,0.5)]" />
@@ -142,7 +142,7 @@ const Details = ({ slugData }) => {
                                     href={socialLinks.facebook}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
+                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110 cursor-pointer"
                                 >
                                     <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-5 rounded-2xl mb-3 group-hover:border-blue-500/40 transition-all">
                                         <FaFacebookF className="text-2xl text-blue-400 group-hover:drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
@@ -159,7 +159,7 @@ const Details = ({ slugData }) => {
                                     href={socialLinks.instagram}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
+                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110 cursor-pointer"
                                 >
                                     <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-5 rounded-2xl mb-3 group-hover:border-pink-500/40 transition-all">
                                         <FaInstagram className="text-2xl text-pink-400 group-hover:drop-shadow-[0_0_15px_rgba(236,72,153,0.5)]" />
@@ -176,7 +176,7 @@ const Details = ({ slugData }) => {
                                     href={socialLinks.youtube}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110"
+                                    className="group flex flex-col items-center transition-all duration-300 hover:scale-110 cursor-pointer"
                                 >
                                     <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 p-5 rounded-2xl mb-3 group-hover:border-red-500/40 transition-all">
                                         <FaYoutube className="text-2xl text-red-400 group-hover:drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]" />
