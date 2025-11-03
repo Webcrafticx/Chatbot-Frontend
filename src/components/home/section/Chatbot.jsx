@@ -282,7 +282,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                 {/* 🔵 Desktop (text + icon) */}
                 <button
                     onClick={toggleChat}
-                    className="hidden sm:flex items-center space-x-3 px-5 py-4 mb-16 
+                    className="hidden sm:flex items-center space-x-3 px-5 py-4 mb-8 
                     rounded-2xl bg-gray-900/80 backdrop-blur-md border border-gray-700 
                     text-gray-100 font-medium tracking-tight
                     shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(147,51,234,0.4)] 
