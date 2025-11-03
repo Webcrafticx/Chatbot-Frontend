@@ -272,9 +272,6 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                             style={fadeInStyle}
                         >
                             {typedText}
-                            <span className="animate-pulse ml-1 text-white">
-                                |
-                            </span>
                         </span>
                     )}
                 </button>
@@ -296,9 +293,6 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                         style={fadeInStyle}
                     >
                         {typedText}
-                        <span className="animate-pulse ml-1 text-purple-400">
-                            |
-                        </span>
                     </span>
                 </button>
             </div>

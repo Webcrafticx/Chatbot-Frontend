@@ -107,7 +107,7 @@ const Home = () => {
 
                 {/* Centered Details */}
                 <div className="relative z-10 flex flex-1 items-center justify-center w-full">
-                    <div className="max-w-5xl w-full px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-screen w-full md:px-8">
                         <Details slugData={slugData} />
                     </div>
                 </div>
