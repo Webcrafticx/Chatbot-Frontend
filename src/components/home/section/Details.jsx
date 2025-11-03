@@ -1,5 +1,4 @@
-import React from "react";
-import { ReactTyped } from "react-typed";
+import React, { useState, useEffect } from "react";
 
 import {
     FaFacebookF,
@@ -18,6 +17,16 @@ const Details = ({ slugData }) => {
     const hasSocialLinks =
         socialLinks &&
         (socialLinks.facebook || socialLinks.instagram || socialLinks.youtube);
+
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        // Trigger fade-in animation after component mounts
+        const timer = setTimeout(() => {
+            setIsVisible(true);
+        }, 100);
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <section className="relative py-20 overflow-hidden">
@@ -55,23 +64,15 @@ const Details = ({ slugData }) => {
                         </span>
                     </h1>
 
-                    <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed text-justify">
-                        {description ? (
-                            <ReactTyped
-                                strings={[description]}
-                                typeSpeed={8}
-                                backSpeed={0}
-                                showCursor={false}
-                            />
-                        ) : (
-                            <ReactTyped
-                                strings={[
-                                    "We create intelligent chatbot experiences to connect your business with your customers effortlessly.",
-                                ]}
-                                typeSpeed={25}
-                                showCursor={false}
-                            />
-                        )}
+                    <p
+                        className={`text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed text-justify transition-all duration-700 transform ${
+                            isVisible
+                                ? "opacity-100 translate-y-0"
+                                : "opacity-0 translate-y-4"
+                        }`}
+                    >
+                        {description ||
+                            "We create intelligent chatbot experiences to connect your business with your customers effortlessly."}
                     </p>
                 </div>
 

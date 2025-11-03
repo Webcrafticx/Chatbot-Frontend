@@ -26,7 +26,6 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
 
-    // ✅ initialize welcome message with typing effect trigger
     useEffect(() => {
         const welcome =
             slugData?.chatbot?.welcomeMessage ||
@@ -44,15 +43,13 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
             keywords: item.keywords || [],
         }));
     };
+
     const [faqs, setFaqs] = useState(generateDynamicFaqs());
-
-    useEffect(() => {
-        setFaqs(generateDynamicFaqs());
-    }, [slugData]);
-
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+    useEffect(() => setFaqs(generateDynamicFaqs()), [slugData]);
+    useEffect(
+        () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }),
+        [messages]
+    );
 
     const sendMessageToAPI = async (message) => {
         if (!slug) return null;
@@ -60,54 +57,50 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
             const token = localStorage.getItem("token");
             const headers = { "Content-Type": "application/json" };
             if (token) headers["Authorization"] = `Token ${token}`;
-            const response = await fetch(
-                `${API_BASE_URL}/chat/${slug}/message`,
-                {
-                    method: "POST",
-                    headers,
-                    body: JSON.stringify({
-                        message,
-                        "src-log": "chatbot-interface",
-                    }),
-                }
-            );
-            if (!response.ok) throw new Error("API Error");
-            return await response.json();
-        } catch (err) {
-            console.error("Error sending message:", err);
+            const res = await fetch(`${API_BASE_URL}/chat/${slug}/message`, {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                    message,
+                    "src-log": "chatbot-interface",
+                }),
+            });
+            if (!res.ok) throw new Error("API Error");
+            return await res.json();
+        } catch (e) {
+            console.error("Error:", e);
             return null;
         }
     };
 
-    const submitQueryToAPI = async (queryData) => {
+    const submitQueryToAPI = async (data) => {
         if (!slug) return false;
         try {
             const token = localStorage.getItem("token");
             const headers = { "Content-Type": "application/json" };
             if (token) headers["Authorization"] = `Token ${token}`;
-            const response = await fetch(`${API_BASE_URL}/chat/${slug}/query`, {
+            const res = await fetch(`${API_BASE_URL}/chat/${slug}/query`, {
                 method: "POST",
                 headers,
                 body: JSON.stringify({
-                    name: queryData.name,
-                    email: queryData.email,
-                    phone: queryData.phone,
-                    message: queryData.message,
+                    name: data.name,
+                    email: data.email,
+                    phone: data.phone,
+                    message: data.message,
                     type: "contact_form",
                 }),
             });
-            if (!response.ok) throw new Error("API response not ok");
+            if (!res.ok) throw new Error("API Error");
             return true;
-        } catch (err) {
-            console.error("Error submitting form:", err);
+        } catch {
             return false;
         }
     };
 
     const handleFaqSelect = async (faq) => {
         setSelectedFaq(faq);
-        setMessages((prev) => [
-            ...prev,
+        setMessages((p) => [
+            ...p,
             { text: faq.question, sender: "user" },
             { text: faq.answer, sender: "bot" },
         ]);
@@ -117,8 +110,8 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
 
     const handleNotInScope = () => {
         setMode("form");
-        setMessages((prev) => [
-            ...prev,
+        setMessages((p) => [
+            ...p,
             { text: "My question is not listed.", sender: "user" },
             {
                 text: slugData?.chatbot?.companyName
@@ -129,87 +122,57 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
         ]);
     };
 
-    const handleFormChange = (e) => {
+    const handleFormChange = (e) =>
         setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        try {
-            const success = await submitQueryToAPI(formData);
-            const companyName = slugData?.chatbot?.companyName || "We";
-            if (success) {
-                setMessages((prev) => [
-                    ...prev,
-                    {
-                        text: `Thank you, ${formData.name}! ${companyName} will contact you at ${formData.email} or ${formData.phone} within 24 hours.`,
-                        sender: "bot",
-                    },
-                    {
-                        text: "Your query has been submitted successfully. Is there anything else I can help you with?",
-                        sender: "bot",
-                    },
-                ]);
-                setFormData({ name: "", email: "", phone: "", message: "" });
-            } else {
-                setMessages((prev) => [
-                    ...prev,
-                    {
-                        text: "Sorry, there was an issue submitting your form. Please try again later.",
-                        sender: "bot",
-                    },
-                ]);
-            }
-        } catch (err) {
-            setMessages((prev) => [
-                ...prev,
-                {
-                    text: "Something went wrong while submitting your form. Please try again later.",
-                    sender: "bot",
-                },
-            ]);
-        } finally {
-            setIsLoading(false);
-            setTimeout(() => setMode("suggestions"), 800);
-        }
+        const success = await submitQueryToAPI(formData);
+        const companyName = slugData?.chatbot?.companyName || "We";
+        setMessages((p) => [
+            ...p,
+            success
+                ? {
+                      text: `Thank you, ${formData.name}! ${companyName} will contact you at ${formData.email} or ${formData.phone} within 24 hours.`,
+                      sender: "bot",
+                  }
+                : {
+                      text: "Sorry, there was an issue submitting your form. Please try again later.",
+                      sender: "bot",
+                  },
+        ]);
+        setFormData({ name: "", email: "", phone: "", message: "" });
+        setIsLoading(false);
+        setTimeout(() => setMode("suggestions"), 800);
     };
 
     const handleSend = async () => {
         if (!input.trim()) return;
-        const userMessage = { text: input, sender: "user" };
-        setMessages((prev) => [...prev, userMessage]);
+        const userMsg = { text: input, sender: "user" };
+        setMessages((p) => [...p, userMsg]);
         setInput("");
         setIsLoading(true);
         try {
-            const apiResponse = await sendMessageToAPI(input);
-            if (apiResponse?.chat?.answer) {
-                const answerType = apiResponse.chat.type;
-                setMessages((prev) => [
-                    ...prev,
-                    { text: apiResponse.chat.answer, sender: "bot" },
+            const res = await sendMessageToAPI(input);
+            if (res?.chat?.answer) {
+                setMessages((p) => [
+                    ...p,
+                    { text: res.chat.answer, sender: "bot" },
                 ]);
-                if (answerType === "fallback")
+                if (res.chat.type === "fallback")
                     setTimeout(() => setMode("form"), 1000);
             } else {
-                const companyName =
-                    slugData?.chatbot?.companyName || "our support team";
-                setMessages((prev) => [
-                    ...prev,
+                setMessages((p) => [
+                    ...p,
                     {
-                        text: `Thanks for your message! ${companyName} will contact you soon.`,
+                        text: `Thanks! ${
+                            slugData?.chatbot?.companyName || "our team"
+                        } will contact you soon.`,
                         sender: "bot",
                     },
                 ]);
             }
-        } catch (err) {
-            setMessages((prev) => [
-                ...prev,
-                {
-                    text: "Sorry, something went wrong. Please try again.",
-                    sender: "bot",
-                },
-            ]);
         } finally {
             setIsLoading(false);
         }
@@ -229,52 +192,113 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
         }
     };
 
-    // ✅ FIXED resetChat: re-triggers typing animation
     const resetChat = () => {
         const welcome =
             slugData?.chatbot?.welcomeMessage ||
             (slugData?.chatbot?.companyName
                 ? `Hello! I'm your virtual assistant from ${slugData.chatbot.companyName}. How can I help you today?`
                 : "Hello! I'm your virtual assistant. How can I help you today?");
-        setMessages([]); // clear chat first
+        setMessages([]);
         setTimeout(() => {
-            setMessages([{ text: welcome, sender: "bot" }]); // re-trigger ReactTyped
+            setMessages([{ text: welcome, sender: "bot" }]);
             setMode("suggestions");
             setInput("");
         }, 200);
     };
 
-    if (!isSidebar && !isOpen) {
-        const companyName = slugData?.chatbot?.companyName || "AI";
+    // ⚡️ Typing + prompt rotation (icons removed)
+    const companyName = slugData?.chatbot?.companyName || "AI";
+    const prompts = [
+        `Chat with ${companyName}`,
+        "Ask your queries!",
+        "Need help? Click me!",
+        "Ready to chat?",
+    ];
+    const [typedText, setTypedText] = useState("");
+    const [promptIndex, setPromptIndex] = useState(0);
+    const [showMobilePrompt, setShowMobilePrompt] = useState(true);
 
+    useEffect(() => {
+        let i = 0;
+        const text = prompts[promptIndex];
+        setTypedText("");
+        const typing = setInterval(() => {
+            if (i < text.length) setTypedText((t) => t + text.charAt(i++));
+            else clearInterval(typing);
+        }, 50);
+        return () => clearInterval(typing);
+    }, [promptIndex]);
+
+    useEffect(() => {
+        const interval = setInterval(
+            () => setPromptIndex((i) => (i + 1) % prompts.length),
+            10000
+        );
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        const toggle = setInterval(() => setShowMobilePrompt((v) => !v), 8000);
+        return () => clearInterval(toggle);
+    }, []);
+
+    const fadeInKeyframes = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(3px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    `;
+
+    const fadeInStyle = { animation: "fadeIn 0.6s ease-in-out" };
+
+    if (!isSidebar && !isOpen) {
         return (
-            <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-                {/* 🟣 Mobile Button (only icon) */}
+            <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-2">
+                <style>{fadeInKeyframes}</style>
+
+                {/* 🟣 Mobile (icon + prompt) */}
                 <button
                     onClick={toggleChat}
-                    className="flex sm:hidden items-center justify-center w-14 h-14 rounded-full 
-                bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg 
-                hover:shadow-[0_0_20px_rgba(147,51,234,0.4)] transition-all duration-300 
-                hover:scale-110 animate-pulse cursor-pointer"
+                    className="relative flex sm:hidden items-center justify-center w-auto h-14 rounded-full 
+                    bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg 
+                    hover:shadow-[0_0_20px_rgba(147,51,234,0.4)] transition-all duration-300 
+                    hover:scale-110 cursor-pointer px-4"
                     title={`Chat with ${companyName}`}
                 >
-                    <FaCommentDots size={22} />
+                    <FaCommentDots size={22} className="mr-2" />
+                    {showMobilePrompt && (
+                        <span
+                            className="text-sm font-medium whitespace-nowrap overflow-hidden"
+                            style={fadeInStyle}
+                        >
+                            {typedText}
+                            <span className="animate-pulse ml-1 text-white">
+                                |
+                            </span>
+                        </span>
+                    )}
                 </button>
 
-                {/* 🔵 Desktop Button (text + icon) */}
+                {/* 🔵 Desktop (text + icon) */}
                 <button
                     onClick={toggleChat}
                     className="hidden sm:flex items-center space-x-3 px-5 py-4 mb-16 
-                rounded-2xl bg-gray-900/80 backdrop-blur-md border border-gray-700 
-                text-gray-100 font-medium tracking-tight
-                shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(147,51,234,0.4)] 
-                transition-all duration-300 hover:scale-[1.07] group cursor-pointer"
+                    rounded-2xl bg-gray-900/80 backdrop-blur-md border border-gray-700 
+                    text-gray-100 font-medium tracking-tight
+                    shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:shadow-[0_0_25px_rgba(147,51,234,0.4)] 
+                    transition-all duration-300 hover:scale-[1.07] group cursor-pointer"
                 >
                     <div className="p-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-inner">
                         <FaCommentDots size={22} className="animate-pulse" />
                     </div>
-                    <span className="font-semibold text-sm sm:text-base text-gray-200 group-hover:text-white transition-colors">
-                        Chat with {companyName}
+                    <span
+                        className="font-semibold text-sm sm:text-base text-gray-200 group-hover:text-white transition-colors whitespace-nowrap"
+                        style={fadeInStyle}
+                    >
+                        {typedText}
+                        <span className="animate-pulse ml-1 text-purple-400">
+                            |
+                        </span>
                     </span>
                 </button>
             </div>
@@ -358,7 +382,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                     </div>
                 </div>
 
-                {/* Chat Content */}
+                {/* Chat Body */}
                 <div className="flex flex-col flex-1 min-h-0 bg-gray-800/50 text-white">
                     <ChatContent
                         messages={messages}
