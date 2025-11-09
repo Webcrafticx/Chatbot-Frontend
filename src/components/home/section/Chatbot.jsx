@@ -35,19 +35,19 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
         setMessages([{ text: welcome, sender: "bot" }]);
     }, [slugData]);
 
-    // const generateDynamicFaqs = () => {
-    //     if (!slugData?.list || !Array.isArray(slugData.list)) return [];
-    //     return slugData.list.map((item) => ({
-    //         question: item.question,
-    //         answer: item.answer,
-    //         keywords: item.keywords || [],
-    //     }));
-    // };
+    const generateDynamicFaqs = () => {
+        if (!slugData?.list || !Array.isArray(slugData.list)) return [];
+        return slugData.list.map((item) => ({
+            question: item.question,
+            answer: item.answer,
+            keywords: item.keywords || [],
+        }));
+    };
 
-    // const [faqs, setFaqs] = useState(generateDynamicFaqs());
-    // useEffect(() => setFaqs(generateDynamicFaqs()), [slugData]);
+    const [faqs, setFaqs] = useState(generateDynamicFaqs());
+    useEffect(() => setFaqs(generateDynamicFaqs()), [slugData]);
 
-    const [faqs, setFaqs] = useState([]);
+    // const [faqs, setFaqs] = useState([]);
 
     useEffect(
         () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }),
@@ -102,13 +102,50 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
 
     const handleFaqSelect = async (faq) => {
         setSelectedFaq(faq);
-        setMessages((p) => [...p, { text: faq.question, sender: "user" }]);
-        const res = await sendMessageToAPI(faq.question);
-        if (res?.chat?.answer) {
-            setMessages((p) => [
-                ...p,
-                { text: res.chat.answer, sender: "bot" },
+
+        // 🟢 Show user's question
+        setMessages((prev) => [
+            ...prev,
+            { text: faq.question, sender: "user" },
+        ]);
+
+        // 🟣 Start thinking animation
+        setIsLoading(true);
+
+        try {
+            // 🟢 Get API response
+            const res = await sendMessageToAPI(faq.question);
+
+            if (res?.chat?.answer) {
+                setMessages((prev) => [
+                    ...prev,
+                    { text: res.chat.answer, sender: "bot" },
+                ]);
+
+                if (res.chat.type === "fallback") {
+                    setTimeout(() => setMode("form"), 1000);
+                }
+            } else {
+                setMessages((prev) => [
+                    ...prev,
+                    {
+                        text: "Sorry, I couldn’t fetch the answer right now.",
+                        sender: "bot",
+                    },
+                ]);
+            }
+        } catch (err) {
+            setMessages((prev) => [
+                ...prev,
+                {
+                    text: "Something went wrong. Please try again.",
+                    sender: "bot",
+                },
             ]);
+        } finally {
+            // 🔵 Stop thinking animation
+            setIsLoading(false);
+            setTimeout(() => setMode("suggestions"), 1000);
         }
     };
 
@@ -374,7 +411,11 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                             </button>
                             {!isSidebar && (
                                 <button
-                                    onClick={toggleChat}
+                                    onClick={() => {
+                                        resetChat();
+                                        setIsOpen(false);
+                                        setIsExpanded(false);
+                                    }}
                                     className="p-2 rounded-xl hover:bg-white/10 transition cursor-pointer"
                                     title="Close"
                                 >
