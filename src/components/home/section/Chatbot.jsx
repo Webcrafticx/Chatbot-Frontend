@@ -35,17 +35,20 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
         setMessages([{ text: welcome, sender: "bot" }]);
     }, [slugData]);
 
-    const generateDynamicFaqs = () => {
-        if (!slugData?.list || !Array.isArray(slugData.list)) return [];
-        return slugData.list.map((item) => ({
-            question: item.question,
-            answer: item.answer,
-            keywords: item.keywords || [],
-        }));
-    };
+    // const generateDynamicFaqs = () => {
+    //     if (!slugData?.list || !Array.isArray(slugData.list)) return [];
+    //     return slugData.list.map((item) => ({
+    //         question: item.question,
+    //         answer: item.answer,
+    //         keywords: item.keywords || [],
+    //     }));
+    // };
 
-    const [faqs, setFaqs] = useState(generateDynamicFaqs());
-    useEffect(() => setFaqs(generateDynamicFaqs()), [slugData]);
+    // const [faqs, setFaqs] = useState(generateDynamicFaqs());
+    // useEffect(() => setFaqs(generateDynamicFaqs()), [slugData]);
+
+    const [faqs, setFaqs] = useState([]);
+
     useEffect(
         () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }),
         [messages]
@@ -99,13 +102,14 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
 
     const handleFaqSelect = async (faq) => {
         setSelectedFaq(faq);
-        setMessages((p) => [
-            ...p,
-            { text: faq.question, sender: "user" },
-            { text: faq.answer, sender: "bot" },
-        ]);
-        if (slug) await sendMessageToAPI(faq.question);
-        setTimeout(() => setMode("suggestions"), 1000);
+        setMessages((p) => [...p, { text: faq.question, sender: "user" }]);
+        const res = await sendMessageToAPI(faq.question);
+        if (res?.chat?.answer) {
+            setMessages((p) => [
+                ...p,
+                { text: res.chat.answer, sender: "bot" },
+            ]);
+        }
     };
 
     const handleNotInScope = () => {
@@ -314,37 +318,42 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
             >
                 {/* Header */}
                 <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-5 text-white rounded-t-3xl">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center space-x-3">
-                            {slugData?.chatbot?.logoUrl ? (
-                                <img
-                                    src={slugData.chatbot.logoUrl}
-                                    alt={
-                                        slugData?.chatbot?.companyName ||
-                                        "Company"
-                                    }
-                                    className="w-10 h-10 rounded-full object-cover border-2 border-white/20 cursor-pointer"
-                                />
-                            ) : (
-                                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center cursor-pointer">
-                                    <FaRobot size={20} />
-                                </div>
-                            )}
-                            <div>
-                                <h3 className="font-bold text-lg">
-                                    {slugData?.chatbot?.companyName ||
-                                        "Company"}{" "}
-                                    Assistant
-                                </h3>
-                                <div className="flex items-center space-x-2">
-                                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                    <span className="text-blue-100 text-sm">
-                                        Online
-                                    </span>
+                    <div className="flex flex-col ">
+                        {/* Left Section - Logo and Name in Column */}
+                        <div className="flex flex-col items-start space-y-2">
+                            <div className="flex items-center space-x-3">
+                                {slugData?.chatbot?.logoUrl ? (
+                                    <img
+                                        src={slugData.chatbot.logoUrl}
+                                        alt={
+                                            slugData?.chatbot?.companyName ||
+                                            "Company"
+                                        }
+                                        className="w-12 h-12 rounded-full object-cover border-2 border-white/20 cursor-pointer"
+                                    />
+                                ) : (
+                                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center cursor-pointer">
+                                        <FaRobot size={24} />
+                                    </div>
+                                )}
+                                <div>
+                                    <h3 className="font-bold text-lg">
+                                        {slugData?.chatbot?.companyName ||
+                                            "Company"}{" "}
+                                        Assistant
+                                    </h3>
+                                    <div className="flex items-center space-x-2">
+                                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                        <span className="text-blue-100 text-sm">
+                                            Online
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex space-x-2">
+
+                        {/* Right Section - Action Buttons */}
+                        <div className="flex space-x-2 justify-end">
                             <button
                                 onClick={() => setIsExpanded(!isExpanded)}
                                 className="p-2 rounded-xl hover:bg-white/10 transition cursor-pointer"

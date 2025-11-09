@@ -49,10 +49,10 @@ const Details = ({ slugData }) => {
                             src={logoUrl}
                             alt={companyName}
                             className="
-                w-full h-full mb-4
+                w-full h-full p-2  mb-4
                 md:w-64 md:h-64
                 object-cover 
-                md:rounded-[2rem]
+            rounded-[2rem]
                 md:border-2 md:border-purple-500/40 
                 shadow-[0_0_25px_rgba(139,92,246,0.3)]
                 cursor-pointer
@@ -62,12 +62,12 @@ const Details = ({ slugData }) => {
                     )}
 
                     {/* Verified Badge */}
-                    <div className="inline-flex items-center gap-2 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-full px-4 py-2 mb-6 cursor-pointer">
+                    {/* <div className="inline-flex items-center gap-2 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-full px-4 py-2 mb-6 cursor-pointer">
                         <FaShieldAlt className="text-purple-400" />
                         <span className="text-sm text-gray-300 font-semibold">
                             Verified Company
                         </span>
-                    </div>
+                    </div> */}
 
                     {/* Company Name */}
                     <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
@@ -78,14 +78,13 @@ const Details = ({ slugData }) => {
 
                     {/* Description */}
                     <p
-                        className={`text-lg md:text-xl text-gray-300 max-w-screen mx-auto leading-relaxed transition-all duration-700 transform ${
+                        className={`text-lg md:text-xl text-justify px-6 md:px-0 text-gray-300 max-w-7xl mx-auto leading-relaxed transition-all duration-700 transform ${
                             isVisible
                                 ? "opacity-100 translate-y-0"
                                 : "opacity-0 translate-y-4"
                         }`}
                     >
-                        {description ||
-                            "We create intelligent chatbot experiences to connect your business with your customers effortlessly."}
+                        {description}
                     </p>
                 </div>
 
