@@ -166,13 +166,6 @@ const ChatContent = ({
                                         {faq.question}
                                     </button>
                                 ))}
-
-                                <button
-                                    onClick={handleNotInScope}
-                                    className="cursor-pointer px-4 py-2 sm:px-5 sm:py-3 border border-gray-600/60 text-gray-300 hover:text-white hover:border-purple-500 transition-all duration-300 rounded-lg text-sm sm:text-base font-medium bg-transparent hover:bg-purple-600/10 w-fit"
-                                >
-                                    My question is not listed
-                                </button>
                             </div>
                         )}
 
@@ -297,15 +290,16 @@ const ChatContent = ({
             {mode !== "form" && (
                 <div className="p-4 rounded-b-2xl border-t border-gray-700 bg-gray-900/70 backdrop-blur-md">
                     <div className="flex items-end border border-gray-700 rounded-2xl bg-gray-800/60 focus-within:ring-2 focus-within:ring-purple-500/50 transition-all">
-                        <input
-                            type="text"
+                        <textarea
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder="Type your message..."
-                            className="flex-1 p-4 bg-transparent text-white placeholder-gray-400 focus:outline-none text-base"
+                            className="flex-1 p-4 bg-transparent text-white placeholder-gray-400 focus:outline-none text-base resize-none"
+                            rows={1}
                             disabled={isLoading}
                         />
+
                         <button
                             onClick={handleSend}
                             disabled={!input.trim() || isLoading}

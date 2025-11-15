@@ -133,14 +133,14 @@ const Details = ({ slugData }) => {
                     {/* CTA Buttons */}
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="cursor-pointer px-6 py-3 my-6 rounded-full font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg transition-all duration-300 hover:scale-105"
+                        className="cursor-pointer px-3 py-1 md:px-6 md:py-3 my-6 rounded-full font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg transition-all duration-300 hover:scale-105"
                     >
                         Inquiry Now
                     </button>
 
                     <p
                         style={{ wordSpacing: "-1px", hyphens: "auto" }}
-                        className={`text-lg md:text-xl text-justify tracking-tight px-6 md:px-0 text-gray-300 max-w-7xl mx-auto leading-relaxed transition-all duration-700 ${
+                        className={`text-lg md:text-xl text-justify tracking-normal px-6 md:px-3 text-gray-300 max-w-7xl mx-auto leading-relaxed transition-all duration-700 ${
                             isVisible
                                 ? "opacity-100 translate-y-0"
                                 : "opacity-0 translate-y-4"
@@ -257,7 +257,7 @@ const Details = ({ slugData }) => {
                         </div>
                         <button
                             onClick={() => setIsModalOpen(true)}
-                            className="cursor-pointer px-6 py-3 my-6 rounded-full font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg transition-all duration-300 hover:scale-105"
+                            className="cursor-pointer px-3 py-1 md:px-6 md:py-3 my-6 rounded-full font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg transition-all duration-300 hover:scale-105"
                         >
                             Reach Us
                         </button>
