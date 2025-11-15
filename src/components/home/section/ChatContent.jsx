@@ -177,7 +177,7 @@ const ChatContent = ({
                         )}
 
                     {/* Contact Form (Inline as Chat Bubble) */}
-                    {mode === "form" && (
+                    {mode === "form" && isTypingDone && (
                         <div className="flex justify-start">
                             {/* Bot Avatar */}
                             <div className="flex-shrink-0 mr-3">

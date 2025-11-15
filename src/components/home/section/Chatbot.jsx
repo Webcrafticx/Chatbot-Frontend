@@ -354,7 +354,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                 } ${isSidebar ? "h-full rounded-2xl" : ""}`}
             >
                 {/* Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-5 text-white rounded-t-3xl">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 text-white rounded-t-3xl">
                     <div className="flex flex-col ">
                         {/* Left Section - Logo and Name in Column */}
                         <div className="flex flex-col items-start space-y-2">
@@ -374,7 +374,7 @@ function Chatbot({ slugData, slug, isSidebar = false }) {
                                     </div>
                                 )}
                                 <div>
-                                    <h3 className="font-bold text-lg">
+                                    <h3 className="font-bold text-md">
                                         {slugData?.chatbot?.companyName ||
                                             "Company"}{" "}
                                         Assistant
